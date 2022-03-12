@@ -1,6 +1,7 @@
 package security.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.CachingUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -32,19 +33,19 @@ public class UserService implements UserDetailsService {
 		userDao.findByUsername(user.getUsername()).ifPresent((u)->{
 			throw new IllegalStateException("Username is already taken");
 		}); 
+		user.setActive(true);
 		user.setPassword(encodeString(user.getPassword()));
 		return userDao.saveAndFlush(user);
 	}
 
-	
-	
-	
-	
-	
 	private String encodeString(String password) {
 		return passwordConfig
 				.passwordEncoder()
 				.encode(password);
+	}
+	
+	public AppUser retrieveFromCache(String username) {
+		return (AppUser) new CachingUserDetailsService(this).loadUserByUsername(username);
 	}
 	
 	
