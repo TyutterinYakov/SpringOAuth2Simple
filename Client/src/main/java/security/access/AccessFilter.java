@@ -67,12 +67,12 @@ public class AccessFilter implements Filter{
 
 	private CurrentUser fetchRemoteUser(HttpServletRequest httpServletRequest) {
 		try {
-			URL url = new URL("http:://localhost:8001/api/v1/auth/current");
+			URL url = new URL("http://localhost:8001/api/v1/auth/current");
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setConnectTimeout(2000);
-			connection.setReadTimeout(1000);
+//			connection.setConnectTimeout(2000);
+//			connection.setReadTimeout(1000);
 			connection.setRequestProperty("Cookie", httpServletRequest.getHeader("Cookie"));
-			connection.setRequestProperty("Content-Type", "application/json");
+			connection.setRequestProperty("content-type", "application/json");
 			connection.setRequestMethod("GET");
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(connection.getInputStream()));
@@ -86,6 +86,7 @@ public class AccessFilter implements Filter{
 			return gson.fromJson(content.toString(), CurrentUser.class);
 		} catch (IOException e) {
 			logger.error(e.getLocalizedMessage());
+			e.printStackTrace();
 		}
 		return new CurrentUser();
 	}

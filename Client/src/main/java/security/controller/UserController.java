@@ -1,5 +1,6 @@
 package security.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +25,9 @@ public class UserController {
 	
 	
 	@GetMapping(path = "access")
-	public ResponseEntity<?> getAccess(){
-		return ResponseEntity.ok(userProvider.get().isEnabled()?
-				"Access granted":"Forbiden");
+	public ResponseEntity<String> getAccess(){
+		return new ResponseEntity<>(userProvider.get().isActive()?
+				"Access granted":"Forbiden", HttpStatus.ACCEPTED);
 	}
 	
 }

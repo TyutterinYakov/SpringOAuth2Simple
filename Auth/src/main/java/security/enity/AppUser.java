@@ -27,7 +27,7 @@ public class AppUser implements UserDetails {
 	private Long userId;
 	private String username;
 	private String password;
-	private boolean active;
+	private boolean active=false;
 	@Enumerated(value = EnumType.STRING)
 	@Column(name="role")
 	private AppUserRole role = AppUserRole.USER;

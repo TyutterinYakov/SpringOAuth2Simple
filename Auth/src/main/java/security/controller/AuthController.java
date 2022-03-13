@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.jaas.DefaultLoginExceptionResolver;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,7 @@ import security.service.RegistrationService;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@CrossOrigin("*")
 public class AuthController {
 	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 	
@@ -42,7 +45,7 @@ public class AuthController {
 		this.loginService = loginService;
 	}
 
-	@PostMapping(path="/register")
+	@PostMapping(path="registration")
 	public ResponseEntity<?> registration(
 			@RequestBody RegistrationRequest request, HttpServletResponse response){
 		try {
@@ -57,7 +60,7 @@ public class AuthController {
 		}
 	}
 	
-	@PostMapping(path="/login")
+	@PostMapping(path="login")
 	public ResponseEntity<?> login(
 			@RequestBody LoginRequest request, HttpServletResponse response){
 		try {
@@ -72,17 +75,18 @@ public class AuthController {
 		}
 	}
 	
-	@GetMapping(path="/current")
+	@GetMapping(path="current")
 	public ResponseEntity<?> current(){
-		AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(appUser==null) {
+		try {
+			AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			return buildUserResponse(appUser);
+		} catch(NullPointerException ex) {
 			return buildUserResponse(new AppUser());
 		}
-		return buildUserResponse(appUser);
 	}
 	
 	
-	@GetMapping(path="/logout")
+	@GetMapping(path="logout")
 	public ResponseEntity<?> logout(HttpServletResponse response, HttpServletRequest request){
 		SecurityContextHolder.clearContext();
 		clearTokens(response);
